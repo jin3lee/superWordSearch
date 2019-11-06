@@ -1,6 +1,7 @@
 3 3
 ABC
 DEF
+GHI
 NO_WRAP
 5
 FED
