@@ -6,7 +6,7 @@ try {
   let dimensions = getDimensions( data );
   let lettersIn2DArray = getLettersIn2DArray( dimensions, data );
 
-  console.log(lettersIn2DArray[1,1].toString());
+  console.log(lettersIn2DArray[2,1].toString());
   // console.log(dimensions);
 } catch (err) {
   console.error(err)
@@ -22,16 +22,19 @@ function getDimensions( data ) {
 }
 
 function getLettersIn2DArray( dimensions, data ) {
+
+  // get data and where the array of letters start/end
   let lettersInRow = data.trim().split('\n');
   var return2DArray = initializeLetterNode2DArray( dimensions.width, dimensions.height );
-
   const firstRowIndex = 1;
   const lastRowIndex = parseInt( dimensions.height );
 
+  // add letters into 2d array as letternodes
   for( var rowIndex = 1; rowIndex < 1 + parseInt( dimensions.height ); rowIndex++ ) {
+
     for( var letterIndex = 0; letterIndex < dimensions.width; letterIndex++ )  {
       var node = new LetterNode( lettersInRow[ rowIndex ][ letterIndex ] );
-      // initialize first row LetterNode
+      // initialize first row LetterNode - WORKS
       if( rowIndex === firstRowIndex ) {
         return2DArray[0][letterIndex] = node;
         if(letterIndex !== 0) {
@@ -41,28 +44,36 @@ function getLettersIn2DArray( dimensions, data ) {
 
       // initialize end row LetterNode
       else if( rowIndex === lastRowIndex ) {
+        // assign letternode to 2d array
         return2DArray[ return2DArray.length-1 ][ letterIndex ] = node;
-        let currentNode = return2DArray[ return2DArray.length - 1 ][ letterIndex ];
-        if(letterIndex !== 0) {
+        // assigns the left node
+        if( letterIndex !== 0 ) {
           let leftNode = return2DArray[ return2DArray.length - 1 ][ letterIndex - 1 ];
-          currentNode.setLeftNode( leftNode );
+          return2DArray[ return2DArray.length - 1 ][ letterIndex ].setLeftNode( leftNode );
+          return2DArray[ return2DArray.length - 1 ][ letterIndex ].setTopLeftNode( return2DArray[ return2DArray.length - 2 ][ letterIndex - 1 ] );
         }
-        let topMiddleNode = return2DArray[ return2DArray.length - 2 ][ letterIndex ];
-        // currentNode.setTopMiddleNode( topMiddleNode );
-        console.log(currentNode);
-        console.log('\n\n');
-        console.log('topMiddle', topMiddleNode);
+        // assigns top right
+        if( letterIndex !== return2DArray[0].length - 1 ) {
+          return2DArray[ return2DArray.length -1 ][ letterIndex ].setTopRightNode( return2DArray[ return2DArray.length -2 ][ letterIndex + 1 ] );
+        }
+        // assigns the top middle node
+        return2DArray[ return2DArray.length - 1 ][ letterIndex ].setTopMiddleNode(return2DArray[ return2DArray.length - 2 ][ letterIndex ]);
       }
 
       // initialize between row LetterNode
       else {
-        // node.setTopMiddleNode(return2DArray[ rowIndex - 2 ][ letterIndex ]);
-        return2DArray[ rowIndex ][ letterIndex ] = node;
-        let currentNode = return2DArray[ rowIndex ][ letterIndex ];
+        return2DArray[ rowIndex-1 ][ letterIndex ] = node;
+        // set left & top left node
         if( letterIndex !== 0 ) {
-          // let left = return2DArray[ rowIndex ][ letterIndex - 1 ] = node;
-          // currentNode.setLeftNode( left );
+          return2DArray[ rowIndex - 1 ][ letterIndex ].setLeftNode( return2DArray[ rowIndex-1 ][ letterIndex - 1 ] );
+          return2DArray[ rowIndex - 1 ][ letterIndex ].setTopLeftNode( return2DArray[ rowIndex - 2 ][ letterIndex - 1 ] );
         }
+        // assigns top right
+        if( letterIndex !== return2DArray[0].length - 1 ) {
+          return2DArray[ rowIndex - 1 ][ letterIndex ].setTopRightNode( return2DArray[ rowIndex - 2 ][ letterIndex + 1 ] );
+        }
+        // set top node
+        return2DArray[ rowIndex-1 ][ letterIndex ].setTopMiddleNode( return2DArray[ rowIndex - 2 ][ letterIndex ] );
       }
     }
   }
@@ -111,7 +122,7 @@ function LetterNode( letter ) {
 
   this.setTopLeftNode = function( otherNode ) {
     this.topLeft = otherNode;
-    otherNode.botLeft = this;
+    otherNode.botRight = this;
   },
   this.setTopMiddleNode = function( otherNode ) {
     this.topMiddle = otherNode;
