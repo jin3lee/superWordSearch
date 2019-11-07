@@ -3,11 +3,22 @@ const fs = require('fs')
 try {
   const data = fs.readFileSync('/Users/josephlee/Desktop/Projects/superWordSearch/input-nowrap.txt', 'utf8')
   // console.log(data)
+
+  // get dimensions of the letters
   let dimensions = getDimensions( data );
+
+  // place letters as letterNodes in object
   let lettersIn2DArray = getLettersIn2DArray( dimensions, data );
 
-  console.log(lettersIn2DArray[2,1].toString());
+  let dataArray = data.trim().split('\n');
+  let isWrapOn = 'WRAP' === dataArray[dimensions.height+1];
+
+  // look for each word based on wrap/nowrap & print out results
+
+  // console.log(lettersIn2DArray[2,1].toString());
   // console.log(dimensions);
+
+
 } catch (err) {
   console.error(err)
 }
@@ -17,7 +28,7 @@ function getDimensions( data ) {
   let dimensions = arrayOfLines[0].split(' ');
   let width = dimensions[0];
   let height = dimensions[1];
-  let returnDimensionsObject = { width: width, height: height };
+  let returnDimensionsObject = { width: parseInt(width), height: parseInt(height) };
   return returnDimensionsObject;
 }
 
@@ -80,14 +91,6 @@ function getLettersIn2DArray( dimensions, data ) {
 
   return return2DArray;
 }
-
-// function printReturn2DArray(array) {
-//   for(var i = 0; i < array.length; i++) {
-//     for(var j = 0; j < array[0].length; j++) {
-//       console.log(array[i][j]);
-//     }
-//   }
-// }
 
 function initializeLetterNode2DArray( width, height ) {
   var array = new Array( height );
